@@ -44,7 +44,8 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F5),
+      // Mengubah warna latar belakang utama
+      backgroundColor: const Color(0xFFF4F6F9), 
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Container(
@@ -66,8 +67,9 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
               Container(
                 width: 250,
                 decoration: BoxDecoration(
+                  // Mengubah warna gradien untuk sidebar
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF6C8CFF), Color(0xFF4A6CF7)],
+                    colors: [Color(0xFF5D7AFF), Color(0xFF335DFF)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -97,8 +99,9 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
                                 horizontal: 16.0, vertical: 8.0),
                             child: Container(
                               decoration: BoxDecoration(
+                                // Mengubah warna item menu yang dipilih
                                 color: isSelected
-                                    ? Colors.white.withOpacity(0.3)
+                                    ? Colors.white.withOpacity(0.2)
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -139,7 +142,7 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF4A6CF7),
+                          foregroundColor: const Color(0xFF335DFF),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -220,7 +223,7 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
             IconButton(
               onPressed: () {},
               icon: const Icon(Icons.notifications_none,
-                  color: Color(0xFF4A6CF7), size: 30),
+                  color: Color(0xFF5D7AFF), size: 30),
             ),
             const SizedBox(width: 16),
             const CircleAvatar(
@@ -247,21 +250,21 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
               "120",
               "Pengguna aktif",
               Icons.person_outline,
-              const Color(0xFF4A6CF7),
+              const Color(0xFF5D7AFF),
             ),
             _buildInfoCard(
               "Total Event",
               "15",
               "Acara yang sedang berlangsung",
               Icons.event_outlined,
-              const Color(0xFFF7728B),
+              const Color(0xFFEE6A88),
             ),
             _buildInfoCard(
               "Laporan",
               "8",
               "Laporan baru",
               Icons.analytics_outlined,
-              const Color(0xFF906FFF),
+              const Color(0xFF996BFF),
             ),
           ],
         );
