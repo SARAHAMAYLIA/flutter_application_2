@@ -11,7 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shimmer: ^3.0.0
+  webview_flutter: ^4.8.0
+
 
   # 🔽 Tambahin 5 library ini
   getwidget: ^4.0.0
