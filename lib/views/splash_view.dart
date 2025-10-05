@@ -1,6 +1,11 @@
 import 'dart:ui'; // penting buat ImageFilter
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'login_view.dart';
+import 'webview_page.dart'; // halaman WebView
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -30,12 +35,35 @@ class _SplashViewState extends State<SplashView>
       curve: Curves.elasticInOut,
     ));
 
+    // Jalankan fungsi library tambahan
+    setSeenSplash();
+    getDeviceInfo();
+
+    // Otomatis pindah ke LoginView setelah 3 detik
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginView()),
       );
     });
+  }
+
+  // Shared Preferences
+  Future<void> setSeenSplash() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('seenSplash', true);
+  }
+
+  // Device Info
+  Future<void> getDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    var info = await deviceInfo.deviceInfo;
+    print("Device Info: ${info.data}");
+  }
+
+  // Format tanggal pakai intl
+  String getFormattedDate() {
+    return DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
   }
 
   @override
@@ -87,11 +115,22 @@ class _SplashViewState extends State<SplashView>
                 ),
                 const SizedBox(height: 20),
 
-                // Teks dengan font menarik + shadow
+                // Tanggal sekarang (intl)
+                Text(
+                  getFormattedDate(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Teks nama
                 Text(
                   "By Sarah Amaylia",
                   style: TextStyle(
-                    fontFamily: 'Poppins', // bisa ganti ke font lain
+                    fontFamily: 'Poppins', 
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -109,6 +148,34 @@ class _SplashViewState extends State<SplashView>
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 20),
+
+                // Tombol Skip (GetWidget)
+                GFButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginView()),
+                    );
+                  },
+                  text: "Skip",
+                  shape: GFButtonShape.pills,
+                  color: Colors.purple,
+                ),
+                const SizedBox(height: 10),
+
+                // Tombol buka WebView (GetWidget)
+                GFButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const WebViewPage()),
+                    );
+                  },
+                  text: "Kampus Website",
+                  shape: GFButtonShape.pills,
+                  color: Colors.green,
                 ),
               ],
             ),
