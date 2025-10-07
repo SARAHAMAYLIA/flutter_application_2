@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'login_view.dart';
-import 'web_view.dart'; // halaman WebView
+
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -165,19 +165,8 @@ class _SplashViewState extends State<SplashView>
                 ),
                 const SizedBox(height: 10),
 
-                // Tombol buka WebView (GetWidget)
-                        GFButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const WebViewPage()),
-                            );
-                          },
-                          text: "Event Kampus",
-                          shape: GFButtonShape.pills,
-                          color: Colors.green,
-                        ),
-
+              
+                
               ],
             ),
           ),

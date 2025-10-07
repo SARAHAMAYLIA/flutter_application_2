@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../views/login_view.dart';
 import '../models/user_model.dart';
+import '../views/user_management_view.dart';
+import '../views/event_management_view.dart';
+import '../views/report_management_view.dart';
 
 class DashboardAdminPage extends StatefulWidget {
   final User user;
@@ -12,40 +15,52 @@ class DashboardAdminPage extends StatefulWidget {
 
 class _DashboardAdminPageState extends State<DashboardAdminPage> {
   int selectedIndex = 0;
+  String searchQuery = "";
 
+  // Dummy Data
+  List<Map<String, dynamic>> users = List.generate(
+    10,
+    (index) => {
+      "id": "USER00${index + 1}",
+      "name": "User ${index + 1}",
+      "email": "user${index + 1}@email.com",
+      "role": index.isEven ? "Admin" : "Mahasiswa",
+    },
+  );
+
+  List<Map<String, dynamic>> events = List.generate(
+    5,
+    (index) => {
+      "id": "EVENT00${index + 1}",
+      "name": "Workshop Flutter ${index + 1}",
+      "date": "2025-09-${25 + index}",
+      "status": index.isEven ? "Aktif" : "Selesai",
+    },
+  );
+
+  List<Map<String, dynamic>> reports = List.generate(
+    3,
+    (index) => {
+      "id": "LAPORAN00${index + 1}",
+      "title": "Laporan Penggunaan ${index + 1}",
+      "date": "2025-09-2${5 + index}",
+      "type": index == 0 ? "Harian" : "Mingguan",
+    },
+  );
+
+  // Menu
   final List<Map<String, dynamic>> menuItems = [
-    {
-      "title": "Dashboard",
-      "icon": Icons.home_rounded,
-      "description": "Ikhtisar statistik dan data utama"
-    },
-    {
-      "title": "Kelola User",
-      "icon": Icons.people_rounded,
-      "description": "Manajemen data dan peran pengguna"
-    },
-    {
-      "title": "Kelola Event",
-      "icon": Icons.event_rounded,
-      "description": "Manajemen acara dan jadwal"
-    },
-    {
-      "title": "Laporan",
-      "icon": Icons.analytics_rounded,
-      "description": "Analisis data dan laporan kinerja"
-    },
-    {
-      "title": "Pengaturan",
-      "icon": Icons.settings_rounded,
-      "description": "Konfigurasi aplikasi dan sistem"
-    },
+    {"title": "Dashboard", "icon": Icons.home_rounded},
+    {"title": "Kelola User", "icon": Icons.people_rounded},
+    {"title": "Kelola Event", "icon": Icons.event_rounded},
+    {"title": "Laporan", "icon": Icons.analytics_rounded},
+    {"title": "Pengaturan", "icon": Icons.settings_rounded},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Mengubah warna latar belakang utama
-      backgroundColor: const Color(0xFFF4F6F9), 
+      backgroundColor: const Color(0xFFF4F6F9),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Container(
@@ -63,125 +78,16 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
           ),
           child: Row(
             children: [
-              // Sidebar
-              Container(
-                width: 250,
-                decoration: BoxDecoration(
-                  // Mengubah warna gradien untuk sidebar
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF5D7AFF), Color(0xFF335DFF)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(24.0),
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 50),
-                    const Text(
-                      "Admin Panel",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-
-                    // Menu List
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: menuItems.length,
-                        itemBuilder: (context, index) {
-                          final isSelected = selectedIndex == index;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                // Mengubah warna item menu yang dipilih
-                                color: isSelected
-                                    ? Colors.white.withOpacity(0.2)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                  menuItems[index]["icon"],
-                                  color: Colors.white,
-                                ),
-                                title: Text(
-                                  menuItems[index]["title"],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  menuItems[index]["description"],
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    selectedIndex = index;
-                                  });
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    // Tombol Logout
-                    Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF335DFF),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          minimumSize: const Size(double.infinity, 50),
-                        ),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const LoginView()),
-                            (route) => false,
-                          );
-                        },
-                        icon: const Icon(Icons.logout, size: 20),
-                        label: const Text(
-                          "Logout",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Main Content
+              _buildSidebar(),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header
                       _buildHeader(),
                       const SizedBox(height: 24),
-
-                      // Dashboard Content
-                      Expanded(
-                        child: _buildContent(),
-                      ),
+                      Expanded(child: _buildContent()),
                     ],
                   ),
                 ),
@@ -193,49 +99,124 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
     );
   }
 
+  // ---------------- Sidebar ----------------
+  Widget _buildSidebar() {
+    return Container(
+      width: 250,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF5D7AFF), Color(0xFF335DFF)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 50),
+          const Text(
+            "Admin Panel",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 40),
+          Expanded(
+            child: ListView.builder(
+              itemCount: menuItems.length,
+              itemBuilder: (context, index) {
+                final isSelected = selectedIndex == index;
+                return ListTile(
+                  leading: Icon(menuItems[index]["icon"], color: Colors.white),
+                  title: Text(
+                    menuItems[index]["title"],
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  tileColor: isSelected ? Colors.white24 : Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                      searchQuery = "";
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF335DFF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginView()),
+                  (route) => false,
+                );
+              },
+              icon: const Icon(Icons.logout, size: 20),
+              label: const Text(
+                "Logout",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------- Header ----------------
   Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Halo admin, 👋",
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Selamat datang kembali di dashboard!",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
-            ),
-          ],
+        Text(
+          "Halo admin 👋",
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[800],
+          ),
         ),
-        Row(
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_none,
-                  color: Color(0xFF5D7AFF), size: 30),
+        if (selectedIndex != 0 && selectedIndex != 4)
+          SizedBox(
+            width: 300,
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Cari data...",
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value.toLowerCase();
+                });
+              },
             ),
-            const SizedBox(width: 16),
-            const CircleAvatar(
-              radius: 24,
-              backgroundImage: AssetImage("assets/images/profile.png"),
-            ),
-          ],
-        ),
+          ),
       ],
     );
   }
 
+  // ---------------- Content ----------------
   Widget _buildContent() {
     switch (selectedIndex) {
       case 0:
@@ -251,6 +232,11 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
               "Pengguna aktif",
               Icons.person_outline,
               const Color(0xFF5D7AFF),
+              onTap: () {
+                setState(() {
+                  selectedIndex = 1; // Pindah ke menu "Kelola User"
+                });
+              },
             ),
             _buildInfoCard(
               "Total Event",
@@ -258,6 +244,11 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
               "Acara yang sedang berlangsung",
               Icons.event_outlined,
               const Color(0xFFEE6A88),
+              onTap: () {
+                setState(() {
+                  selectedIndex = 2; // Pindah ke menu "Kelola Event"
+                });
+              },
             ),
             _buildInfoCard(
               "Laporan",
@@ -265,225 +256,229 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
               "Laporan baru",
               Icons.analytics_outlined,
               const Color(0xFF996BFF),
+              onTap: () {
+                setState(() {
+                  selectedIndex = 3; // Pindah ke menu "Laporan"
+                });
+              },
             ),
           ],
         );
       case 1:
-        return _buildUserManagementTable();
+        return UserManagementView(users: users, searchQuery: searchQuery);
       case 2:
-        return _buildEventManagementTable();
+        return EventManagementView(events: events, searchQuery: searchQuery);
       case 3:
-        return _buildReportTable();
+        return ReportManagementView(reports: reports, searchQuery: searchQuery);
+
       case 4:
         return const Center(
-            child: Text("Halaman Pengaturan - Konten sedang dikembangkan."));
+          child: Text("Halaman Pengaturan - Konten sedang dikembangkan."),
+        );
       default:
-        return const Center(child: Text("Halaman Tidak Ditemukan"));
+        return const Center(
+          child: Text("Halaman Tidak Ditemukan"),
+        );
     }
   }
 
+  // ---------------- Card ----------------
   Widget _buildInfoCard(
-      String title, String value, String subtitle, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: color.withOpacity(0.1),
-                child: Icon(icon, color: color, size: 30),
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+    String title,
+    String value,
+    String subtitle,
+    IconData icon,
+    Color color, {
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: color.withOpacity(0.1),
+                  child: Icon(icon, color: color, size: 30),
                 ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
+  // ---------------- Tables ----------------
   Widget _buildUserManagementTable() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Kelola User",
-          style: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: SingleChildScrollView(
-            child: DataTable(
-              headingRowColor: MaterialStateColor.resolveWith(
-                  (states) => const Color(0xFFF4F6FA)),
-              columns: const [
-                DataColumn(label: Text('ID User')),
-                DataColumn(label: Text('Nama')),
-                DataColumn(label: Text('Email')),
-                DataColumn(label: Text('Peran')),
-                DataColumn(label: Text('Aksi')),
-              ],
-              rows: List.generate(
-                10,
-                (index) => DataRow(cells: [
-                  DataCell(Text('USER00${index + 1}')),
-                  DataCell(Text('User ${index + 1}')),
-                  DataCell(Text('user${index + 1}@email.com')),
-                  DataCell(Text(index.isEven ? 'Admin' : 'Mahasiswa')),
-                  DataCell(Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {},
-                      ),
-                    ],
-                  )),
-                ]),
-              ),
+    final filtered = users
+        .where((u) =>
+            u["name"].toLowerCase().contains(searchQuery) ||
+            u["email"].toLowerCase().contains(searchQuery))
+        .toList();
+
+    return _buildTable("Kelola User", [
+      "ID User",
+      "Nama",
+      "Email",
+      "Peran",
+      "Aksi"
+    ], filtered.map((u) {
+      return DataRow(cells: [
+        DataCell(Text(u["id"])),
+        DataCell(Text(u["name"])),
+        DataCell(Text(u["email"])),
+        DataCell(Text(u["role"])),
+        DataCell(
+          Row(children: [
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.blue),
+              onPressed: () {},
             ),
-          ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {},
+            ),
+          ]),
         ),
-      ],
-    );
+      ]);
+    }).toList());
   }
 
   Widget _buildEventManagementTable() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Kelola Event",
-          style: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: SingleChildScrollView(
-            child: DataTable(
-              headingRowColor: MaterialStateColor.resolveWith(
-                  (states) => const Color(0xFFF4F6FA)),
-              columns: const [
-                DataColumn(label: Text('ID Event')),
-                DataColumn(label: Text('Nama Event')),
-                DataColumn(label: Text('Tanggal')),
-                DataColumn(label: Text('Status')),
-                DataColumn(label: Text('Aksi')),
-              ],
-              rows: List.generate(
-                5,
-                (index) => DataRow(cells: [
-                  DataCell(Text('EVENT00${index + 1}')),
-                  DataCell(Text('Workshop Flutter ${index + 1}')),
-                  DataCell(Text('2025-09-${25 + index}')),
-                  DataCell(Text(index.isEven ? 'Aktif' : 'Selesai')),
-                  DataCell(Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {},
-                      ),
-                    ],
-                  )),
-                ]),
-              ),
+    final filtered = events
+        .where((e) =>
+            e["name"].toLowerCase().contains(searchQuery) ||
+            e["status"].toLowerCase().contains(searchQuery))
+        .toList();
+
+    return _buildTable("Kelola Event", [
+      "ID Event",
+      "Nama Event",
+      "Tanggal",
+      "Status",
+      "Aksi"
+    ], filtered.map((e) {
+      return DataRow(cells: [
+        DataCell(Text(e["id"])),
+        DataCell(Text(e["name"])),
+        DataCell(Text(e["date"])),
+        DataCell(Text(e["status"])),
+        DataCell(
+          Row(children: [
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.blue),
+              onPressed: () {},
             ),
-          ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {},
+            ),
+          ]),
         ),
-      ],
-    );
+      ]);
+    }).toList());
   }
 
   Widget _buildReportTable() {
+    final filtered = reports
+        .where((r) =>
+            r["title"].toLowerCase().contains(searchQuery) ||
+            r["type"].toLowerCase().contains(searchQuery))
+        .toList();
+
+    return _buildTable("Laporan", [
+      "ID Laporan",
+      "Judul",
+      "Tanggal",
+      "Tipe",
+      "Aksi"
+    ], filtered.map((r) {
+      return DataRow(cells: [
+        DataCell(Text(r["id"])),
+        DataCell(Text(r["title"])),
+        DataCell(Text(r["date"])),
+        DataCell(Text(r["type"])),
+        DataCell(
+          Row(children: [
+            IconButton(
+              icon: const Icon(Icons.download, color: Colors.green),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.visibility, color: Colors.blue),
+              onPressed: () {},
+            ),
+          ]),
+        ),
+      ]);
+    }).toList());
+  }
+
+  Widget _buildTable(String title, List<String> columns, List<DataRow> rows) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Laporan",
-          style: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
         const SizedBox(height: 20),
         Expanded(
           child: SingleChildScrollView(
             child: DataTable(
               headingRowColor: MaterialStateColor.resolveWith(
-                  (states) => const Color(0xFFF4F6FA)),
-              columns: const [
-                DataColumn(label: Text('ID Laporan')),
-                DataColumn(label: Text('Judul')),
-                DataColumn(label: Text('Tanggal')),
-                DataColumn(label: Text('Tipe')),
-                DataColumn(label: Text('Aksi')),
-              ],
-              rows: List.generate(
-                3,
-                (index) => DataRow(cells: [
-                  DataCell(Text('LAPORAN00${index + 1}')),
-                  DataCell(Text('Laporan Penggunaan ${index + 1}')),
-                  DataCell(Text('2025-09-2${5 + index}')),
-                  DataCell(Text(index == 0 ? 'Harian' : 'Mingguan')),
-                  DataCell(Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.download, color: Colors.green),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.visibility, color: Colors.blue),
-                        onPressed: () {},
-                      ),
-                    ],
-                  )),
-                ]),
+                (_) => const Color(0xFFF4F6FA),
               ),
+              columns: columns.map((c) => DataColumn(label: Text(c))).toList(),
+              rows: rows,
             ),
           ),
         ),

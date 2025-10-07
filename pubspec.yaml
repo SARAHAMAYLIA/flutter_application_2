@@ -1,7 +1,7 @@
 name: flutter_application_2
 description: A new Flutter project
 
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -11,14 +11,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter: ^4.8.0
 
+  # ✅ UI Components
+  getwidget: ^7.0.0   # versi terbaru, sudah support Flutter terbaru
 
-  # 🔽 Tambahin 5 library ini
-  getwidget: ^4.0.0
-  device_info_plus: ^11.0.0
-  shared_preferences: ^2.2.2
-  intl: ^0.19.0
+  # ✅ Plugins
+  device_info_plus: ^12.1.0
+  shared_preferences: ^2.3.3
+  intl: ^0.20.2
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +27,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/images/bg.png
     - assets/images/logo1.png
