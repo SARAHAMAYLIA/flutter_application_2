@@ -15,7 +15,7 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView>
-    with SingleTickerProviderStateMixin {
+  with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _bounceAnimation;
 

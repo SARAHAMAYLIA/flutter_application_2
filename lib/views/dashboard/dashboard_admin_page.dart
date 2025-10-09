@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../views/login_view.dart';
-import '../models/user_model.dart';
-import '../views/user_management_view.dart';
-import '../views/event_management_view.dart';
-import '../views/report_management_view.dart';
+import '../login_view.dart';
+import '../../models/user_model.dart';
+import 'user_management_view.dart';
+import 'event_management_view.dart';
+import 'report_management_view.dart';
 
 class DashboardAdminPage extends StatefulWidget {
   final User user;
@@ -217,70 +217,68 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
   }
 
   // ---------------- Content ----------------
-  Widget _buildContent() {
-    switch (selectedIndex) {
-      case 0:
-        return GridView.count(
-          crossAxisCount: 3,
-          crossAxisSpacing: 24,
-          mainAxisSpacing: 24,
-          childAspectRatio: 1.5,
-          children: [
-            _buildInfoCard(
-              "Total User",
-              "120",
-              "Pengguna aktif",
-              Icons.person_outline,
-              const Color(0xFF5D7AFF),
-              onTap: () {
-                setState(() {
-                  selectedIndex = 1; // Pindah ke menu "Kelola User"
-                });
-              },
-            ),
-            _buildInfoCard(
-              "Total Event",
-              "15",
-              "Acara yang sedang berlangsung",
-              Icons.event_outlined,
-              const Color(0xFFEE6A88),
-              onTap: () {
-                setState(() {
-                  selectedIndex = 2; // Pindah ke menu "Kelola Event"
-                });
-              },
-            ),
-            _buildInfoCard(
-              "Laporan",
-              "8",
-              "Laporan baru",
-              Icons.analytics_outlined,
-              const Color(0xFF996BFF),
-              onTap: () {
-                setState(() {
-                  selectedIndex = 3; // Pindah ke menu "Laporan"
-                });
-              },
-            ),
-          ],
-        );
-      case 1:
-        return UserManagementView(users: users, searchQuery: searchQuery);
-      case 2:
-        return EventManagementView(events: events, searchQuery: searchQuery);
-      case 3:
-        return ReportManagementView(reports: reports, searchQuery: searchQuery);
+      Widget _buildContent() {
+        switch (selectedIndex) {
+          case 0:
+            return GridView.count(
+              crossAxisCount: 3,
+              crossAxisSpacing: 24,
+              mainAxisSpacing: 24,
+              childAspectRatio: 1.5,
+              children: [
+                _buildInfoCard(
+                  "Total User",
+                  "${users.length}",
+                  "Pengguna aktif",
+                  Icons.person_outline,
+                  const Color(0xFF5D7AFF),
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 1; // Pindah ke menu "Kelola User"
+                    });
+                  },
+                ),
+                _buildInfoCard(
+                  "Total Event",
+                  "${events.length}",
+                  "Acara yang sedang berlangsung",
+                  Icons.event_outlined,
+                  const Color(0xFFEE6A88),
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 2; // Pindah ke menu "Kelola Event"
+                    });
+                  },
+                ),
+                _buildInfoCard(
+                  "Total Laporan",
+                  "${reports.length}",
+                  "Laporan terdata",
+                  Icons.analytics_outlined,
+                  const Color(0xFF996BFF),
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 3; // Pindah ke menu "Laporan"
+                    });
+                  },
+                ),
+              ],
+            );
 
-      case 4:
-        return const Center(
-          child: Text("Halaman Pengaturan - Konten sedang dikembangkan."),
-        );
-      default:
-        return const Center(
-          child: Text("Halaman Tidak Ditemukan"),
-        );
-    }
-  }
+          case 1:
+            return UserManagementView(users: users, searchQuery: searchQuery);
+          case 2:
+            return EventManagementView(events: events, searchQuery: searchQuery);
+          case 3:
+            return ReportManagementView(reports: reports, searchQuery: searchQuery);
+          case 4:
+            return const Center(
+              child: Text("Halaman Pengaturan - Konten sedang dikembangkan."),
+            );
+          default:
+            return const Center(child: Text("Halaman Tidak Ditemukan"));
+        }
+      }
 
   // ---------------- Card ----------------
   Widget _buildInfoCard(
@@ -474,7 +472,7 @@ class _DashboardAdminPageState extends State<DashboardAdminPage> {
         Expanded(
           child: SingleChildScrollView(
             child: DataTable(
-              headingRowColor: MaterialStateColor.resolveWith(
+              headingRowColor: WidgetStateColor.resolveWith(
                 (_) => const Color(0xFFF4F6FA),
               ),
               columns: columns.map((c) => DataColumn(label: Text(c))).toList(),

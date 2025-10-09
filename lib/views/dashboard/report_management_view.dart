@@ -51,7 +51,7 @@ class ReportManagementView extends StatelessWidget {
           child: SingleChildScrollView(
             child: DataTable(
               headingRowColor:
-                  MaterialStateColor.resolveWith((_) => const Color(0xFFF4F6FA)),
+                  WidgetStateColor.resolveWith((_) => const Color(0xFFF4F6FA)),
               columns: columns.map((c) => DataColumn(label: Text(c))).toList(),
               rows: rows,
             ),

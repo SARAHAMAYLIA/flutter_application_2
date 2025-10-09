@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-
 import '../controllers/auth_controller.dart';
+import '../utils/prefs_helper.dart'; // ✅ tambahkan ini
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -27,8 +27,8 @@ class _LoginViewState extends State<LoginView> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color.fromARGB(255, 229, 240, 241), // Dark purple
-                  Color.fromARGB(255, 52, 86, 109), // Dark blue/purple
+                  Color.fromARGB(255, 229, 240, 241),
+                  Color.fromARGB(255, 52, 86, 109),
                 ],
               ),
             ),
@@ -63,7 +63,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ],
                   ),
-                  // FIX OVERFLOW: pakai scroll
                   child: SafeArea(
                     child: SingleChildScrollView(
                       child: Column(
@@ -79,7 +78,6 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           const SizedBox(height: 20),
 
-                          // "Sign in" text
                           const Text(
                             "Sign in",
                             style: TextStyle(
@@ -90,14 +88,13 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Email Field
+                          // Email
                           TextField(
                             controller: _emailController,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               hintText: "E-Mail",
-                              hintStyle:
-                                  TextStyle(color: Colors.white.withOpacity(0.7)),
+                              hintStyle: TextStyle(color: Colors.white70),
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.1),
                               border: OutlineInputBorder(
@@ -112,15 +109,14 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           const SizedBox(height: 15),
 
-                          // Password Field
+                          // Password
                           TextField(
                             controller: _passwordController,
                             obscureText: true,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               hintText: "Password",
-                              hintStyle:
-                                  TextStyle(color: Colors.white.withOpacity(0.7)),
+                              hintStyle: TextStyle(color: Colors.white70),
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.1),
                               border: OutlineInputBorder(
@@ -145,12 +141,15 @@ class _LoginViewState extends State<LoginView> {
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {
-                              _authController.login(
+                            onPressed: () async {
+                              await _authController.login(
                                 context,
                                 _emailController.text.trim(),
                                 _passwordController.text.trim(),
                               );
+
+                              // ✅ Simpan email user ke SharedPreferences
+                              await PrefsHelper.saveUser(_emailController.text.trim());
                             },
                             child: const Text(
                               "Sign in",
@@ -163,7 +162,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           const SizedBox(height: 15),
 
-                          // "Don't have an account?" & "Sign up"
+                          // Register
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

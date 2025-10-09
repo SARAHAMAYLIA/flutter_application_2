@@ -12,14 +12,17 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # ✅ UI Components
-  getwidget: ^7.0.0   # versi terbaru, sudah support Flutter terbaru
+  # ✅ UI Components (komponen siap pakai seperti card, button, avatar)
+  getwidget: ^7.0.0   # versi terbaru
+  flutter_animate: ^4.5.0
+  
 
-  # ✅ Plugins
-  device_info_plus: ^12.1.0
-  shared_preferences: ^2.3.3
-  intl: ^0.20.2
-  url_launcher: ^6.3.0
+  # ✅ Plugins & Utilitas
+  shared_preferences: ^2.3.3       # Simpan data lokal (user login, tema, dsb)
+  intl: ^0.20.2                    # Format tanggal, waktu, mata uang
+  device_info_plus: ^12.1.0        # Info perangkat (brand, model)
+  webview_flutter: ^4.8.0          # Tampilkan halaman web dalam app
+  url_launcher: ^6.3.0             # Buka link eksternal (browser, telpon, email)
 
 dev_dependencies:
   flutter_test:
@@ -31,3 +34,4 @@ flutter:
   assets:
     - assets/images/bg.png
     - assets/images/logo1.png
+    - assets/images/
