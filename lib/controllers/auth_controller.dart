@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../utils/prefs_helper.dart';
 import '../views/dashboard/dashboard_admin_page.dart';
-import '../views/dashboard_user_page.dart';
+import '../views/dashboard/user_page.dart';
 
 class AuthController {
-  // Dummy data untuk contoh login
+  // Dummy data login sederhana
   final List<User> _users = [
     User(email: "admin", password: "admin123", role: "admin"),
     User(email: "user", password: "user123", role: "user"),
   ];
 
-  // Jadikan Future agar bisa di-await
-  Future<void> login(BuildContext context, String email, String password) async {
+  Future<void> login(
+      BuildContext context, String email, String password) async {
     try {
+      // Cari user berdasarkan email dan password
       final user = _users.firstWhere(
         (u) => u.email == email && u.password == password,
       );
 
-      // ✅ Simpan email ke SharedPreferences
-      await PrefsHelper.saveUser(email);
+      // Simpan ke SharedPreferences
+      await PrefsHelper.saveUser(user.email);
 
       // Arahkan sesuai role
       if (user.role == "admin") {
@@ -34,7 +35,6 @@ class AuthController {
         );
       }
     } catch (e) {
-      // kalau email/password salah
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Email atau password salah")),
       );

@@ -15,155 +15,109 @@ class UserManagementView extends StatefulWidget {
 }
 
 class _UserManagementViewState extends State<UserManagementView> {
-  late List<Map<String, dynamic>> _users;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+
+  // Filter users berdasarkan search query
+  List<Map<String, dynamic>> get filteredUsers {
+    if (widget.searchQuery.isEmpty) {
+      return widget.users;
+    }
+    return widget.users.where((user) {
+      final name = user['name'].toString().toLowerCase();
+      final email = user['email'].toString().toLowerCase();
+      final role = user['role'].toString().toLowerCase();
+      final id = user['id'].toString().toLowerCase();
+      final query = widget.searchQuery.toLowerCase();
+      
+      return name.contains(query) || 
+             email.contains(query) || 
+             role.contains(query) ||
+             id.contains(query);
+    }).toList();
+  }
 
   @override
-  void initState() {
-    super.initState();
-    _users = List.from(widget.users);
-  }
-
-  void _addUser() {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    String role = "Mahasiswa";
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Tambah User Baru"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Nama"),
-            ),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: "Email"),
-            ),
-            DropdownButtonFormField<String>(
-              initialValue: role,
-              items: const [
-                DropdownMenuItem(value: "Admin", child: Text("Admin")),
-                DropdownMenuItem(value: "Mahasiswa", child: Text("Mahasiswa")),
-              ],
-              onChanged: (value) => role = value!,
-              decoration: const InputDecoration(labelText: "Peran"),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _users.add({
-                  "id": "USER00${_users.length + 1}",
-                  "name": nameController.text,
-                  "email": emailController.text,
-                  "role": role,
-                });
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Simpan"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _editUser(Map<String, dynamic> user) {
-    TextEditingController nameController = TextEditingController(text: user["name"]);
-    TextEditingController emailController = TextEditingController(text: user["email"]);
-    String role = user["role"];
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Edit Data User"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Nama"),
-            ),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: "Email"),
-            ),
-            DropdownButtonFormField<String>(
-              initialValue: role,
-              items: const [
-                DropdownMenuItem(value: "Admin", child: Text("Admin")),
-                DropdownMenuItem(value: "Mahasiswa", child: Text("Mahasiswa")),
-              ],
-              onChanged: (value) => role = value!,
-              decoration: const InputDecoration(labelText: "Peran"),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                user["name"] = nameController.text;
-                user["email"] = emailController.text;
-                user["role"] = role;
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Update"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _deleteUser(Map<String, dynamic> user) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Hapus User"),
-        content: Text("Apakah kamu yakin ingin menghapus ${user["name"]}?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
-              setState(() {
-                _users.remove(user);
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Hapus"),
-          ),
-        ],
-      ),
-    );
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _roleController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _users
-        .where((u) =>
-            u["name"].toLowerCase().contains(widget.searchQuery) ||
-            u["email"].toLowerCase().contains(widget.searchQuery))
-        .toList();
+    return LayoutBuilder(builder: (context, constraints) {
+      final bool isMobile = constraints.maxWidth < 600;
+      final bool isTablet = constraints.maxWidth >= 600 && constraints.maxWidth < 900;
 
+      if (isMobile) {
+        return _buildMobileLayout();
+      } else {
+        return _buildTabletDesktopLayout(isTablet);
+      }
+    });
+  }
+
+  // Layout untuk Mobile (Vertikal)
+  Widget _buildMobileLayout() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildAddUserForm(true),
+          const SizedBox(height: 16),
+          _buildUserList(true),
+        ],
+      ),
+    );
+  }
+
+  // Layout untuk Tablet & Desktop (Horizontal)
+  Widget _buildTabletDesktopLayout(bool isTablet) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 📋 Tabel user
+          Expanded(
+            flex: isTablet ? 2 : 3,
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _buildUserTable(isTablet),
+              ),
+            ),
+          ),
+          SizedBox(width: isTablet ? 12 : 16),
+          // ➕ Form tambah user
+          Expanded(
+            flex: isTablet ? 1 : 2,
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _buildAddUserForm(false),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Tabel User (Tablet & Desktop)
+  Widget _buildUserTable(bool isTablet) {
+    final users = filteredUsers;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -171,62 +125,299 @@ class _UserManagementViewState extends State<UserManagementView> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "Kelola User",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+              "Daftar Pengguna",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            if (widget.searchQuery.isNotEmpty)
+              Text(
+                "${users.length} hasil",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+          ],
+        ),
+        const Divider(),
+        if (users.isEmpty)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Tidak ada data yang ditemukan",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ),
             ),
+          )
+        else
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  border: TableBorder.all(color: Colors.grey.shade300),
+                  columnSpacing: isTablet ? 20 : 56,
+                  horizontalMargin: isTablet ? 12 : 24,
+                  columns: const [
+                    DataColumn(label: Text("ID")),
+                    DataColumn(label: Text("Nama")),
+                    DataColumn(label: Text("Email")),
+                    DataColumn(label: Text("Role")),
+                  ],
+                  rows: users
+                      .map((user) => DataRow(cells: [
+                            DataCell(Text(user['id'])),
+                            DataCell(
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: isTablet ? 100 : 150,
+                                ),
+                                child: Text(
+                                  user['name'],
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: isTablet ? 120 : 180,
+                                ),
+                                child: Text(
+                                  user['email'],
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            DataCell(Text(user['role'])),
+                          ]))
+                      .toList(),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // List User untuk Mobile (Card View)
+  Widget _buildUserList(bool isMobile) {
+    final users = filteredUsers;
+    
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Daftar Pengguna",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                if (widget.searchQuery.isNotEmpty)
+                  Text(
+                    "${users.length} hasil",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(),
+            if (users.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    children: [
+                      Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+                      const SizedBox(height: 12),
+                      Text(
+                        "Tidak ada data yang ditemukan",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: users.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blueAccent.withOpacity(0.1),
+                      child: Text(
+                        user['name'][0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.blueAccent,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      user['name'],
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user['email'],
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: user['role'] == 'Admin'
+                                ? Colors.purple.withOpacity(0.1)
+                                : Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            user['role'],
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: user['role'] == 'Admin'
+                                  ? Colors.purple[700]
+                                  : Colors.blue[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: Text(
+                      user['id'],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Form Tambah User
+  Widget _buildAddUserForm(bool isMobile) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(isMobile ? 12.0 : 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Tambah Pengguna",
+              style: TextStyle(
+                fontSize: isMobile ? 16 : 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Divider(),
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: "Nama Lengkap",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: "Email",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _roleController,
+              decoration: InputDecoration(
+                labelText: "Role",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
+              onPressed: () {
+                // Logika tambah user
+                _nameController.clear();
+                _emailController.clear();
+                _roleController.clear();
+              },
               icon: const Icon(Icons.add),
               label: const Text("Tambah User"),
-              onPressed: _addUser,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5D7AFF),
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.blueAccent,
+                minimumSize: const Size(double.infinity, 45),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: SingleChildScrollView(
-            child: DataTable(
-              headingRowColor:
-                  WidgetStateColor.resolveWith((_) => const Color(0xFFF4F6FA)),
-              columns: const [
-                DataColumn(label: Text("ID User")),
-                DataColumn(label: Text("Nama")),
-                DataColumn(label: Text("Email")),
-                DataColumn(label: Text("Peran")),
-                DataColumn(label: Text("Aksi")),
-              ],
-              rows: filtered.map((u) {
-                return DataRow(cells: [
-                  DataCell(Text(u["id"])),
-                  DataCell(Text(u["name"])),
-                  DataCell(Text(u["email"])),
-                  DataCell(Text(u["role"])),
-                  DataCell(Row(children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => _editUser(u),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _deleteUser(u),
-                    ),
-                  ])),
-                ]);
-              }).toList(),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -11,6 +11,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sidebarx: ^0.17.2
+
+
+
+
 
   # ✅ UI Components (komponen siap pakai seperti card, button, avatar)
   getwidget: ^7.0.0   # versi terbaru

@@ -1,11 +1,10 @@
-import 'dart:ui'; // penting buat ImageFilter
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'login_view.dart';
-
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -15,7 +14,7 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView>
-  with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _bounceAnimation;
 
@@ -23,23 +22,23 @@ class _SplashViewState extends State<SplashView>
   void initState() {
     super.initState();
 
-    // Animasi bounce untuk logo
+    // 🎵 Bounce dibuat lebih pelan dan lembut
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3), // sebelumnya 2 detik → lebih halus
     )..repeat(reverse: true);
 
     _bounceAnimation =
-        Tween<double>(begin: 0.9, end: 1.1).animate(CurvedAnimation(
+        Tween<double>(begin: 0.95, end: 1.05).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.elasticInOut,
+      curve: Curves.easeInOut, // diganti dari elasticInOut biar lebih lembut
     ));
 
-    // Jalankan fungsi library tambahan
+    // Jalankan fungsi tambahan
     setSeenSplash();
     getDeviceInfo();
 
-    // Otomatis pindah ke LoginView setelah 3 detik
+    // Pindah otomatis ke LoginView setelah 3 detik
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
@@ -78,80 +77,92 @@ class _SplashViewState extends State<SplashView>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background gradient
+          // 🌈 Background gradasi
           Container(
             decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment.center,
-                radius: 0.8,
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
                 colors: [
-                  Color.fromARGB(255, 158, 217, 221), // pinggir
-                  Color.fromARGB(255, 71, 110, 128),  // tengah
+                  Color(0xFF2E005E),
+                  Color(0xFF8E2DE2),
+                  Color(0xFFF16E5C),
+                  Color(0xFFFFC371),
                 ],
+                stops: [0.0, 0.3, 0.7, 1.0],
               ),
             ),
           ),
 
-          // Blur efek
+          // Efek blur lembut
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              color: Colors.black.withOpacity(0), // transparan biar blur keliatan
-            ),
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(color: Colors.black.withOpacity(0.05)),
           ),
 
-          // Konten di tengah
+          // 🌟 Konten utama
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo dengan efek bounce
+                // 🔹 Logo lebih kecil & bounce lembut
                 ScaleTransition(
                   scale: _bounceAnimation,
                   child: Image.asset(
                     "assets/images/logo1.png",
-                    height: 300,
+                    height: 140, // sebelumnya 220
+                    width: 140,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
-                // Tanggal sekarang (intl)
-                Text(
-                  getFormattedDate(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+                // 🔹 Tanggal
+                Stack(
+                  children: [
+                    Text(
+                      getFormattedDate(),
+                      style: TextStyle(
+                        fontSize: 14, // lebih kecil
+                        fontWeight: FontWeight.w500,
+                        foreground: Paint()
+                          ..style = PaintingStyle.stroke
+                          ..strokeWidth = 1.5
+                          ..color = Colors.black54,
+                      ),
+                    ),
+                    Text(
+                      getFormattedDate(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
 
-                // Teks nama
+                // 🔹 Nama
                 Text(
                   "By Sarah Amaylia",
                   style: TextStyle(
-                    fontFamily: 'Poppins', 
-                    fontSize: 28,
+                    fontFamily: 'Poppins',
+                    fontSize: 20, // dari 26 → lebih pas di HP
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    letterSpacing: 1.5,
+                    letterSpacing: 1.2,
                     shadows: [
                       Shadow(
-                        offset: const Offset(2, 2),
-                        blurRadius: 6,
-                        color: Colors.black.withOpacity(0.7),
-                      ),
-                      Shadow(
-                        offset: const Offset(-2, -2),
-                        blurRadius: 6,
-                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(1.5, 1.5),
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.5),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // Tombol Skip (GetWidget)
+                // 🔹 Tombol Skip
                 GFButton(
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -161,12 +172,9 @@ class _SplashViewState extends State<SplashView>
                   },
                   text: "Skip",
                   shape: GFButtonShape.pills,
-                  color: Colors.purple,
+                  color: Colors.deepPurpleAccent,
+                  size: GFSize.MEDIUM, // kecilin dari LARGE
                 ),
-                const SizedBox(height: 10),
-
-              
-                
               ],
             ),
           ),
