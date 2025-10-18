@@ -4,7 +4,6 @@ class EventModel {
   String _tanggal = "";
   String _lokasi = "";
 
-  // Constructor
   EventModel({
     required String judul,
     required String deskripsi,
@@ -28,4 +27,23 @@ class EventModel {
   set deskripsi(String value) => _deskripsi = value;
   set tanggal(String value) => _tanggal = value;
   set lokasi(String value) => _lokasi = value;
+
+  // ✅ Tambahkan ini
+  Map<String, dynamic> toMap() {
+    return {
+      'judul': _judul,
+      'deskripsi': _deskripsi,
+      'tanggal': _tanggal,
+      'lokasi': _lokasi,
+    };
+  }
+
+  factory EventModel.fromMap(Map<String, dynamic> map) {
+    return EventModel(
+      judul: map['judul'],
+      deskripsi: map['deskripsi'],
+      tanggal: map['tanggal'],
+      lokasi: map['lokasi'],
+    );
+  }
 }

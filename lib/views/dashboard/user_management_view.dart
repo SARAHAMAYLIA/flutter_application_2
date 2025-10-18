@@ -30,11 +30,11 @@ class _UserManagementViewState extends State<UserManagementView> {
       final role = user['role'].toString().toLowerCase();
       final id = user['id'].toString().toLowerCase();
       final query = widget.searchQuery.toLowerCase();
-      
-      return name.contains(query) || 
-             email.contains(query) || 
-             role.contains(query) ||
-             id.contains(query);
+
+      return name.contains(query) ||
+          email.contains(query) ||
+          role.contains(query) ||
+          id.contains(query);
     }).toList();
   }
 
@@ -50,7 +50,8 @@ class _UserManagementViewState extends State<UserManagementView> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final bool isMobile = constraints.maxWidth < 600;
-      final bool isTablet = constraints.maxWidth >= 600 && constraints.maxWidth < 900;
+      final bool isTablet =
+          constraints.maxWidth >= 600 && constraints.maxWidth < 900;
 
       if (isMobile) {
         return _buildMobileLayout();
@@ -117,7 +118,7 @@ class _UserManagementViewState extends State<UserManagementView> {
   // Tabel User (Tablet & Desktop)
   Widget _buildUserTable(bool isTablet) {
     final users = filteredUsers;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -214,7 +215,7 @@ class _UserManagementViewState extends State<UserManagementView> {
   // List User untuk Mobile (Card View)
   Widget _buildUserList(bool isMobile) {
     final users = filteredUsers;
-    
+
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(

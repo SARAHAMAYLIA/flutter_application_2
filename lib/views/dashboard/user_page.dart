@@ -1,220 +1,132 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user_model.dart';
-import '../../utils/prefs_helper.dart';
+import '../../models/event_model.dart';
+import 'bookmark_user.dart';
 
-class DashboardUserPage extends StatelessWidget {
+class DashboardUserPage extends StatefulWidget {
+  
   final User user;
+  const DashboardUserPage({super.key, required this.user});
 
-  const DashboardUserPage({Key? key, required this.user}) : super(key: key);
+  @override
+  State<DashboardUserPage> createState() => _DashboardUserPageState();
+}
+
+class _DashboardUserPageState extends State<DashboardUserPage> {
+  List<EventModel> events = [
+    EventModel(
+      judul: "Seminar AI & Machine Learning",
+      deskripsi: "Membahas perkembangan AI terkini.",
+      tanggal: "20 Oktober 2025",
+      lokasi: "Surabaya",
+    ),
+    EventModel(
+      judul: "Workshop UI/UX Design Thinking",
+      deskripsi: "Belajar membangun pengalaman pengguna modern.",
+      tanggal: "25 Oktober 2025",
+      lokasi: "Online",
+    ),
+    EventModel(
+      judul: "Hackathon Nasional 2025",
+      deskripsi: "Kompetisi inovasi digital skala nasional.",
+      tanggal: "1 November 2025",
+      lokasi: "Jakarta",
+    ),
+  ];
+
+  List<EventModel> bookmarkedEvents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookmarks();
+  }
+
+  Future<void> _loadBookmarks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? jsonString = prefs.getString('bookmarked_events');
+
+    if (jsonString != null) {
+      final List decoded = jsonDecode(jsonString);
+      setState(() {
+        bookmarkedEvents =
+            decoded.map((e) => EventModel.fromMap(Map<String, dynamic>.from(e))).toList();
+      });
+    }
+  }
+
+  Future<void> _saveBookmarks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String jsonString =
+        jsonEncode(bookmarkedEvents.map((e) => e.toMap()).toList());
+    await prefs.setString('bookmarked_events', jsonString);
+  }
+
+  void toggleBookmark(EventModel event) {
+    setState(() {
+      if (bookmarkedEvents.any((e) => e.judul == event.judul)) {
+        bookmarkedEvents.removeWhere((e) => e.judul == event.judul);
+      } else {
+        bookmarkedEvents.add(event);
+      }
+    });
+    _saveBookmarks();
+  }
+
+  void goToBookmarks() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookmarkUserPage(
+          user: widget.user,
+          bookmarkedEvents: bookmarkedEvents,
+          onRemove: (event) {
+            toggleBookmark(event);
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Dashboard'),
+        title: Text("Halo, ${widget.user.name}!"),
+        backgroundColor: Colors.purple,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
+            icon: const Icon(Icons.bookmark),
+            onPressed: goToBookmarks,
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Welcome
-            Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.blue,
-                      child: Text(
-                        user.email[0].toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Welcome Back!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user.email,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.green[100],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Role: ${user.role}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.green[800],
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
+      body: ListView.builder(
+        itemCount: events.length,
+        itemBuilder: (context, index) {
+          final event = events[index];
+          final isBookmarked =
+              bookmarkedEvents.any((e) => e.judul == event.judul);
 
-            // Menu Grid
-            const Text(
-              'Menu',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            elevation: 3,
+            child: ListTile(
+              title: Text(event.judul),
+              subtitle: Text("${event.tanggal} • ${event.lokasi}"),
+              trailing: IconButton(
+                icon: Icon(
+                  isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  color: isBookmarked ? Colors.purple : Colors.grey,
+                ),
+                onPressed: () => toggleBookmark(event),
               ),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: [
-                  _buildMenuCard(
-                    context,
-                    icon: Icons.person,
-                    title: 'Profile',
-                    color: Colors.blue,
-                    onTap: () {
-                      // Navigate to profile
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profile page')),
-                      );
-                    },
-                  ),
-                  _buildMenuCard(
-                    context,
-                    icon: Icons.settings,
-                    title: 'Settings',
-                    color: Colors.orange,
-                    onTap: () {
-                      // Navigate to settings
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Settings page')),
-                      );
-                    },
-                  ),
-                  _buildMenuCard(
-                    context,
-                    icon: Icons.notifications,
-                    title: 'Notifications',
-                    color: Colors.purple,
-                    onTap: () {
-                      // Navigate to notifications
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Notifications page')),
-                      );
-                    },
-                  ),
-                  _buildMenuCard(
-                    context,
-                    icon: Icons.help,
-                    title: 'Help',
-                    color: Colors.green,
-                    onTap: () {
-                      // Navigate to help
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Help page')),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
-  }
-
-  Widget _buildMenuCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 40,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _logout(BuildContext context) async {
-    // Hapus data user dari SharedPreferences
-    await PrefsHelper.clearUser();
-
-    // Kembali ke halaman login
-    if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
-    }
   }
 }
