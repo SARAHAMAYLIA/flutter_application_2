@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/dashboard-user': (context) {
           final user = ModalRoute.of(context)!.settings.arguments as User;
-          return UserPage(user: user);
+          return DashboardUserPage(user: user);
         },
         '/tips-user': (context) {
           final user = ModalRoute.of(context)!.settings.arguments as User;
