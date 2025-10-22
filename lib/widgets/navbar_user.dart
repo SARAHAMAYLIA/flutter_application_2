@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import '../models/event_model.dart';
 
 class NavbarUser extends StatelessWidget {
   final dynamic user;
+  final List<Event> bookmark;
   final VoidCallback onLogout;
   final String currentPage; // Untuk menandai halaman aktif
 
   const NavbarUser({
     Key? key,
     required this.user,
+    required this.bookmark,
     required this.onLogout,
     this.currentPage = 'home',
   }) : super(key: key);
@@ -17,6 +20,13 @@ class NavbarUser extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth <= 600;
     final isTablet = screenWidth > 600 && screenWidth <= 1024;
+
+    // kode untuk map bookmarknya
+    Map<String, dynamic> userMap = {
+      'user': user,
+      'bookmark': bookmark,
+      //bookmarkedEvents: null
+    };
 
     if (isMobile) {
       return Column(
@@ -72,7 +82,8 @@ class NavbarUser extends StatelessWidget {
                 }),
                 _buildNavItem(context, 'Bookmark', currentPage == 'bookmark', () {
                   if (currentPage != 'bookmark') {
-                    Navigator.pushNamed(context, '/bookmark-user', arguments: user);
+                    // Navigator.pushNamed(context, '/bookmark-user', arguments: user);
+                    Navigator.pushNamed(context, '/bookmark-user', arguments: userMap);
                   }
                 }),
               ],
@@ -104,7 +115,8 @@ class NavbarUser extends StatelessWidget {
               SizedBox(width: isTablet ? 24 : 32),
               _buildNavItem(context, 'Bookmark', currentPage == 'bookmark', () {
                 if (currentPage != 'bookmark') {
-                  Navigator.pushNamed(context, '/bookmark-user', arguments: user);
+                  // Navigator.pushNamed(context, '/bookmark-user', arguments: user);
+                  Navigator.pushNamed(context, '/bookmark-user', arguments: userMap);
                 }
               }),
               SizedBox(width: isTablet ? 24 : 32),

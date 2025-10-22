@@ -1,53 +1,55 @@
 import 'package:flutter/material.dart';
 import '../../../models/user_model.dart';
+import '../../../models/event_model.dart';
 import '../../../widgets/navbar_user.dart';
 
 class TipsUserPage extends StatelessWidget {
   final User user;
-  const TipsUserPage({super.key, required this.user});
+  final List<Event> bookmark;
+
+  const TipsUserPage({super.key, required this.bookmark, required this.user});
 
   @override
   Widget build(BuildContext context) {
+    final tipsList = [
+      'Datang tepat waktu ke acara kampus!',
+      'Gunakan pakaian rapi dan sopan.',
+      'Jangan lupa follow akun resmi event untuk update terbaru.',
+      'Bawa ID Card atau KTM saat registrasi.',
+    ];
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
-      appBar: AppBar(
-        title: const Text('Tips & Edukasi Event'),
-        backgroundColor: Colors.purple,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: NavbarUser(
+      backgroundColor: Colors.deepPurple.shade50,
+      body: SafeArea(
+        child: Column(
+          children: [
+            NavbarUser(
               user: user,
-              currentPage: 'tips',
+              bookmark: bookmark,
               onLogout: () {
-                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                Navigator.pushReplacementNamed(context, '/');
               },
+              currentPage: 'tips',
             ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: const [
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.lightbulb, color: Colors.purple),
-                    title: Text("Tips Mengatur Jadwal Event"),
-                    subtitle: Text("Pelajari cara memilih event yang sesuai dengan minat dan waktu kuliah."),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.people, color: Colors.purple),
-                    title: Text("Networking di Dunia Kampus"),
-                    subtitle: Text("Bangun relasi positif lewat kegiatan kampus."),
-                  ),
-                ),
-              ],
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: tipsList.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ListTile(
+                      leading: const Icon(Icons.lightbulb,
+                          color: Colors.orangeAccent),
+                      title: Text(tipsList[index]),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

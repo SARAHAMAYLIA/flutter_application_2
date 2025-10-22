@@ -19,7 +19,8 @@ class AuthController {
         (u) => u.email == email && u.password == password,
       );
 
-      // Simpan ke SharedPreferences
+      // Simpan ke SharedPreferences, abaikan jika sudah ada di SharedPref
+      // if (await PrefsHelper.getUser(user.email) != null)
       await PrefsHelper.saveUser(user.email);
 
       // Arahkan sesuai role
